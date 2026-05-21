@@ -40,14 +40,10 @@ description: >
 
 **方式一：OpenCLI 自动抓取（推荐）**
 ```bash
-opencli amazon product <商品链接>
+npx @jackwener/opencli@latest amazon product <商品链接>
 ```
-- 检查是否安装：运行 `opencli --version`
-- 如果未安装，提示用户安装：
-  > 推荐安装 OpenCLI 自动获取商品信息：
-  > ```bash
-  > npm install -g @jackwener/opencli
-  > ```
+- 检查是否可用：运行 `npx @jackwener/opencli@latest --version`
+- 如果正常运行，直接使用 npx 方式执行
 - 执行成功后自动提取：品牌、产品名称、评分、评论数、品类、卖点
 
 **方式二：手动输入（备选）**

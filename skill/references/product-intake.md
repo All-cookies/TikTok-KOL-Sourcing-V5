@@ -16,7 +16,7 @@
 当用户提供亚马逊链接时，优先使用 OpenCLI 自动提取：
 
 ```bash
-opencli amazon product <商品链接>
+npx @jackwener/opencli@latest amazon product <商品链接>
 ```
 
 **支持的市场**：
@@ -36,13 +36,13 @@ opencli amazon product <商品链接>
 | 卖点 | "2000 Puffs, 5% Nicotine, 8ml Tank, 1500mAh Battery" |
 | 竞品（相关推荐） | "ELF BAR", "Puff Bar", "Mr. Fog" |
 
-**如果 OpenCLI 未安装**：
-
-提示用户：
-> 推荐安装 OpenCLI 自动获取商品信息：
-> ```bash
-> npm install -g @jackwener/opencli
-> ```
+**方式一：OpenCLI 自动抓取（推荐）**
+```bash
+npx @jackwener/opencli@latest amazon product <商品链接>
+```
+- 检查是否可用：`npx @jackwener/opencli@latest --version`
+- 如果正常运行，直接使用 npx 方式执行
+- 执行成功后自动提取：品牌、产品名称、评分、评论数、品类、卖点
 
 **OpenCLI 失败时的降级方案**：
 
