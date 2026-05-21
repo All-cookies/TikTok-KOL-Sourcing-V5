@@ -1,0 +1,21 @@
+# Environment variables (API keys)
+.env
+
+# Dependencies
+node_modules/
+
+# macOS
+.DS_Store
+
+# Build outputs
+.next/
+out/
+dist/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
