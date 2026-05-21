@@ -1,42 +1,129 @@
----
-name: tiktok-kol-sourcing-v2
-description: >
-  TikTok KOL Sourcing V2 - Enhanced version with AI-generated outreach emails and multi-filter.
-  触发词：说"新版红人"、"V2建联"、"增强版KOL"、"多维筛选红人"、"搜集达人"、"搜集小助手启动"、
-  "v2"、"V2"、"生成开发信"、"筛选互动率"时触发。
----
-# TikTok KOL Sourcing V2
+# TikTok KOL Sourcing V5
 
-Enhanced version of the TikTok KOL sourcing skill with:
+> 一款面向跨境电商的 TikTok 红人发现与触达工具，帮助品牌快速找到匹配的达人并生成个性化开发信。
 
-- **Automatic Product Analysis** - Extract product info from Amazon links
-- **AI-Generated Outreach Emails** - Personalized email generation
-- **Multi-Dimensional Filtering** - Filter by engagement rate, country, content type
+## ✨ 核心特性
 
-## Quick Start
+### 🤖 智能产品解析
+输入 Amazon 商品链接，自动提取产品卖点、目标用户画像、关键词。无需手动整理，一句话即可启动。
+
+### 📧 AI 个性化开发信
+基于五段式结构（钩子 → 自我介绍 → 价值传递 → CTA → 签名）生成专属邮件，根据博主粉丝量动态调整语气（微 influencer 亲切随性，头部达人专业简洁）。
+
+### 🔍 多维筛选
+告别单一粉丝量筛选，支持：
+- 粉丝区间（自定义范围）
+- 互动率（≥3% 高互动）
+- 目标市场（美区/东南亚等）
+- 内容类型（宠物、科技、户外等）
+
+### 📊 分级评分
+A/B/C 三级评分体系，综合内容质量、互动数据、商业价值，帮您快速锁定优质达人。
+
+## 工作流程
+
+```
+Phase 1: 产品分析 → Phase 2: 关键词策略 → Phase 2.5: 用户偏好确认
+    ↓
+Phase 3: API 配置 → Phase 4: 数据采集 → Phase 5: 补充筛选
+    ↓
+Phase 6: 评分排序 → Phase 7: 开发信生成
+```
+
+## 🚀 快速开始
+
+### 触发方式
+
+在 Claude Code 中说以下任一指令即可启动：
+
+| 触发词 | 场景 |
+|--------|------|
+| `搜集小助手启动` | 标准场景 |
+| `新版红人` / `V2建联` | 版本指定 |
+| `多维筛选红人` | 高级筛选 |
+| `生成开发信` | 单独生成邮件 |
+
+### 使用示例
+
+```
+你：帮我找一批能够带美区宠物智能用品的达人
+AI： 请提供商品链接或产品描述
+你： https://www.amazon.com/... (PETKIT 自动猫砂盆 $389)
+AI： ✅ 产品分析完成。目标用户：Smart APP用户、Cat Mom、宠物科技爱好者
+     请确认您的筛选偏好：
+     - 粉丝区间：?
+     - 目标市场：?
+     - 互动率要求：?
+     - 每组抓取数量：?
+你： 3K-200K粉丝，美区，互动率3%以上，50个
+AI： 开始采集...
+     ✅ 采集完成！找到 47 位符合条件的达人
+     ✅ 开发信已生成，可直接使用
+```
+
+## 📁 项目结构
+
+```
+TikTok-KOL-Sourcing-V5/
+├── skill/                    # Agent Skill 核心
+│   ├── SKILL.md             # 技能定义（触发词 + 工作流）
+│   └── references/
+│       ├── product-intake.md      # 产品信息采集模板
+│       ├── endpoints.md           # TikHub API 接口文档
+│       ├── email-template.md      # 开发信模板与规则
+│       ├── filters.md             # 筛选维度说明
+│       └── outreach-scoring.md    # 评分体系
+├── src/app/                 # Next.js 前端（可选）
+├── output/                   # 采集结果与生成邮件
+└── _scrape.ts               # 独立脚本（直接运行）
+```
+
+## 🔧 配置
+
+### 1. 获取 TikHub API Key
+
+1. 访问 [tikhub.io](https://tikhub.io) 注册账号
+2. 获取 API Key
+
+### 2. 配置环境变量
 
 ```bash
-cp -r skill/ /your-project/skill
+cp .env.example .env
+# 编辑 .env，填入您的 API Key
+TIK_API_KEY=your_api_key_here
 ```
 
-## Project Structure
+### 3. 安装依赖
 
-```
-tiktok-kol-sourcing-v2/
-├── skill/
-│   ├── SKILL.md
-│   └── references/
-│       ├── product-intake.md
-│       ├── endpoints.md
-│       ├── email-template.md
-│       ├── filters.md
-│       └── outreach-scoring.md
-├── src/app/
-│   ├── layout.tsx
-│   └── page.tsx
-└── output/
+```bash
+npm install
 ```
 
-## License
+## 📄 输出示例
+
+采集结果包含：
+
+| 字段 | 说明 |
+|------|------|
+| 博主名 | TikTok 昵称 |
+| 粉丝量 | 关注数 |
+| 互动率 | 点赞/评论/分享综合 |
+| 主营内容 | 垂类标签 |
+| 评分等级 | A/B/C |
+| 开发信 | AI 生成的个性化邮件 |
+
+## 💡 适用场景
+
+- **品牌出海**：快速建立 TikTok 达人资源池
+- **爆品推广**：针对特定产品匹配垂直达人
+- **代理服务**：为客户提供红人筛选与触达一条龙
+
+## ⚠️ 注意事项
+
+- 本工具需要 TikHub API Key，有效期和配额请参考 [tikhub.io](https://tikhub.io)
+- 请遵守 TikTok 平台规范，勿用于违规采集
+- 开发信内容仅供参考，实际使用请遵守当地广告法
+
+## 📄 License
 
 MIT
