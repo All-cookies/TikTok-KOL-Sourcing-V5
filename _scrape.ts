@@ -330,7 +330,6 @@ function toHTMLReport(
   const tierB = creators.filter((c) => c.tier === "B").length;
   const tierC = creators.filter((c) => c.tier === "C").length;
   const withEmail = creators.filter((c) => c.has_email).length;
-  const withBioLink = creators.filter((c) => c.has_bio_link).length;
   const emailRate = total > 0 ? ((withEmail / total) * 100).toFixed(1) : "0";
 
   const kwEntries = Array.from(kwStats.entries()).sort((a, b) => b[1] - a[1]);
@@ -344,26 +343,25 @@ function toHTMLReport(
           : c.best_video_plays >= 1_000
           ? (c.best_video_plays / 1_000).toFixed(0) + "K"
           : String(c.best_video_plays);
-      const tierColor =
-        c.tier === "A" ? "#22c55e" : c.tier === "B" ? "#f59e0b" : "#ef4444";
+      const tierBg = c.tier === "A" ? "bg-[#e8ece9] border-[#d2d9d4] text-[#526656]" : c.tier === "B" ? "bg-[#fef3c7] border-[#fde68a] text-[#92400e]" : "bg-[#fee2e2] border-[#fecaca] text-[#991b1b]";
+      const tierText = c.tier === "A" ? "#526656" : c.tier === "B" ? "#92400e" : "#991b1b";
       return `
-      <tr data-keyword="${escHtml(c.search_keyword)}" data-tier="${c.tier}" data-search="${escHtml((c.nickname + " " + c.unique_id + " " + c.bio).toLowerCase())}">
-        <td style="padding:10px 12px;border-bottom:1px solid #1e293b;color:#94a3b8;font-size:13px">${i + 1}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #1e293b"><span style="color:${tierColor};font-weight:700;font-size:12px">${c.tier}</span></td>
-        <td style="padding:10px 12px;border-bottom:1px solid #1e293b">
-          <a href="${escHtml(c.profile_url)}" target="_blank" style="color:#38bdf8;text-decoration:none;font-weight:600;font-size:14px">${escHtml(c.unique_id)}</a>
-          <div style="color:#64748b;font-size:12px;margin-top:2px">${escHtml(c.nickname)}</div>
+      <tr data-keyword="${escHtml(c.search_keyword)}" data-tier="${c.tier}" data-search="${escHtml((c.nickname + " " + c.unique_id + " " + c.bio).toLowerCase())}" class="hover:bg-[#faf9f5] transition-colors">
+        <td class="px-4 py-3.5 text-[#aba79e]">${i + 1}</td>
+        <td class="px-4 py-3.5"><span class="font-semibold border px-2 py-0.5 rounded text-[11px] ${tierBg}">${c.tier}</span></td>
+        <td class="px-4 py-3.5">
+          <a href="${escHtml(c.profile_url)}" target="_blank" class="text-[#3f3e3a] font-semibold hover:text-[#ac6c56] transition-colors block">@${escHtml(c.unique_id)}</a>
+          <div class="text-[#8c8981] text-[11px] mt-0.5">${escHtml(c.nickname)}</div>
         </td>
-        <td style="padding:10px 12px;border-bottom:1px solid #1e293b;color:#e2e8f0;font-size:13px">${(c.follower_count / 1000).toFixed(1)}K</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #1e293b;color:#e2e8f0;font-size:13px">${plays}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #1e293b">
-          ${c.email ? `<a href="mailto:${escHtml(c.email)}" style="color:#22c55e;text-decoration:none;font-size:13px">${escHtml(c.email)}</a>` : '<span style="color:#475569;font-size:13px">—</span>'}
+        <td class="px-4 py-3.5 font-medium">${(c.follower_count / 1000).toFixed(1)}K</td>
+        <td class="px-4 py-3.5 font-medium text-[#7a7770]">${plays}</td>
+        <td class="px-4 py-3.5">
+          ${c.email ? `<a href="mailto:${escHtml(c.email)}" class="text-[#6b8299] hover:text-[#4a5c6d] underline decoration-[#c5ced6] underline-offset-2">Email</a>` : '<span class="text-[#dedbd3]">—</span>'}
+          ${c.bio_link ? `<span class="text-[#dedbd3] mx-1">|</span><a href="${escHtml(c.bio_link)}" target="_blank" class="text-[#6b8299] hover:text-[#4a5c6d] underline decoration-[#c5ced6] underline-offset-2">Bio Link</a>` : ''}
         </td>
-        <td style="padding:10px 12px;border-bottom:1px solid #1e293b">
-          ${c.bio_link ? `<a href="${escHtml(c.bio_link)}" target="_blank" style="color:#a78bfa;text-decoration:none;font-size:13px">链接</a>` : '<span style="color:#475569;font-size:13px">—</span>'}
+        <td class="px-4 py-3.5 hidden sm:table-cell">
+          <span class="text-[#7d6978] bg-[#f2edf0] px-2 py-1 rounded-md text-[11px]">${escHtml(c.search_keyword)}</span>
         </td>
-        <td style="padding:10px 12px;border-bottom:1px solid #1e293b;color:#94a3b8;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(c.bio)}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #1e293b"><span style="background:#0f172a;color:#94a3b8;padding:3px 8px;border-radius:4px;font-size:11px">${escHtml(c.search_keyword)}</span></td>
       </tr>`;
     })
     .join("");
@@ -372,13 +370,13 @@ function toHTMLReport(
     .map(([kw, count]) => {
       const pct = (count / maxKwCount) * 100;
       return `
-      <div style="margin-bottom:8px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-          <span style="color:#cbd5e1;font-size:13px">${escHtml(kw)}</span>
-          <span style="color:#94a3b8;font-size:12px">${count} 位</span>
+      <div class="group cursor-default">
+        <div class="flex justify-between items-center text-[13px] mb-1.5">
+          <span class="text-[#595751]">${escHtml(kw)}</span>
+          <span class="text-[#8c8981] font-medium">${count}</span>
         </div>
-        <div style="background:#1e293b;height:6px;border-radius:3px;overflow:hidden">
-          <div style="background:linear-gradient(90deg,#38bdf8,#818cf8);height:100%;width:${pct}%;border-radius:3px"></div>
+        <div class="bg-[#f2f0ea] h-2 rounded-full overflow-hidden">
+          <div class="bg-[#c4b5a3] h-full rounded-full transition-all group-hover:bg-[#b0a18e]" style="width:${pct}%"></div>
         </div>
       </div>`;
     })
@@ -391,94 +389,120 @@ function toHTMLReport(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TikTok KOL Report — PETKIT Cat Litter</title>
+<title>TikTok KOL Report — ${OUTPUT_LABEL}</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#0b0f19;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.5;min-height:100vh}
-.container{max-width:1200px;margin:0 auto;padding:24px}
-header{margin-bottom:28px}
-header h1{font-size:24px;font-weight:700;background:linear-gradient(90deg,#38bdf8,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-header .meta{color:#64748b;font-size:13px;margin-top:4px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
-.card{background:#111827;border:1px solid #1e293b;border-radius:10px;padding:16px}
-.card .label{color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.card .value{font-size:22px;font-weight:700;color:#f8fafc}
-.card .value.green{color:#22c55e}.card .value.blue{color:#38bdf8}.card .value.purple{color:#a78bfa}.card .value.orange{color:#f59e0b}
-.section{background:#111827;border:1px solid #1e293b;border-radius:10px;padding:20px;margin-bottom:20px}
-.section h2{font-size:16px;font-weight:600;color:#f8fafc;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
-.toolbar input{background:#0b0f19;border:1px solid #1e293b;border-radius:6px;padding:8px 12px;color:#e2e8f0;font-size:13px;flex:1;min-width:200px;outline:none}
-.toolbar input:focus{border-color:#38bdf8}
-.toolbar button{background:#1e293b;border:1px solid #334155;border-radius:6px;padding:6px 12px;color:#94a3b8;font-size:12px;cursor:pointer;transition:all .2s}
-.toolbar button:hover{background:#334155;color:#e2e8f0}
-.toolbar button.active{background:#38bdf8;color:#0b0f19;border-color:#38bdf8;font-weight:600}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{padding:10px 12px;text-align:left;color:#94a3b8;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.3px;border-bottom:2px solid #1e293b;cursor:pointer;user-select:none}
-th:hover{color:#38bdf8}
-td{vertical-align:top}
-tr:hover td{background:#0f172a}
-.path-box{background:#0b0f19;border:1px dashed #334155;border-radius:8px;padding:12px 16px;font-family:monospace;font-size:12px;color:#94a3b8;word-break:break-all}
-.empty{text-align:center;color:#475569;padding:40px;font-size:14px}
 ::-webkit-scrollbar{width:8px;height:8px}
-::-webkit-scrollbar-track{background:#0b0f19}
-::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:#475569}
+::-webkit-scrollbar-track{background:#fdfbf7}
+::-webkit-scrollbar-thumb{background:#dedbd3;border-radius:10px;border:2px solid #fdfbf7}
+::-webkit-scrollbar-thumb:hover{background:#c7c4ba}
+::selection{background:#e8e3d5;color:#3f3e3a}
 </style>
 </head>
-<body>
-<div class="container">
-  <header>
-    <h1>PETKIT 智能猫砂盆 | 红人采集报告</h1>
-    <div class="meta">${timestamp} · TikHub API</div>
+<body class="bg-[#fdfbf7] text-[#3f3e3a] font-sans antialiased min-h-screen">
+<div class="max-w-[1200px] mx-auto px-6 py-12 md:py-16 space-y-10">
+
+  <header class="space-y-3 pb-4">
+    <h1 class="text-3xl font-bold tracking-tight text-[#2c2b28]">
+      📊 ${OUTPUT_LABEL} 红人库
+    </h1>
+    <p class="text-[13px] text-[#8c8981] font-medium flex items-center gap-3">
+      <span class="flex items-center gap-1.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        ${timestamp}
+      </span>
+      <span>•</span>
+      <span class="flex items-center gap-1.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+        TikHub API 数据源
+      </span>
+    </p>
   </header>
-  <div class="cards">
-    <div class="card"><div class="label">总博主数</div><div class="value blue">${total}</div></div>
-    <div class="card"><div class="label">A 级（优先）</div><div class="value green">${tierA}</div></div>
-    <div class="card"><div class="label">有邮箱</div><div class="value purple">${withEmail} <span style="font-size:14px;font-weight:400">(${emailRate}%)</span></div></div>
-    <div class="card"><div class="label">B/C 级</div><div class="value orange">${tierB + tierC}</div></div>
-  </div>
-  <div class="section">
-    <h2>📊 关键词来源分布</h2>
-    ${kwBarsHtml}
-  </div>
-  <div class="section">
-    <h2>📋 博主列表</h2>
-    <div class="toolbar">
-      <input type="text" id="search" placeholder="🔍 搜索博主、邮箱、关键词..." oninput="filterRows()">
-      <button onclick="filterByTier('')">全部</button>
-      <button onclick="filterByTier('A')">A 级</button>
-      <button onclick="filterByTier('B')">B 级</button>
-      <button onclick="filterByTier('C')">C 级</button>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+    <div class="bg-white border border-[#ebe8e0] p-5 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+      <p class="text-xs font-semibold text-[#8c8981] mb-2 tracking-wide">总博主数</p>
+      <p class="text-3xl font-bold text-[#3f3e3a]">${total}</p>
     </div>
-    <div style="overflow-x:auto">
-      <table>
-        <thead>
-          <tr>
-            <th onclick="sortTable(0)">#</th>
-            <th onclick="sortTable(1)">等级</th>
-            <th onclick="sortTable(2)">博主</th>
-            <th onclick="sortTable(3)">粉丝</th>
-            <th onclick="sortTable(4)">最高播放</th>
-            <th onclick="sortTable(5)">邮箱</th>
-            <th onclick="sortTable(6)">Bio Link</th>
-            <th>Bio</th>
-            <th onclick="sortTable(8)">来源</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody">
-          ${rowsHtml}
-        </tbody>
-      </table>
-      <div id="emptyState" class="empty" style="display:none">没有找到匹配的博主</div>
+    <div class="bg-white border border-[#ebe8e0] p-5 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+      <p class="text-xs font-semibold text-[#8c8981] mb-2 tracking-wide flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-[#758a79]"></span> A 级优先
+      </p>
+      <p class="text-3xl font-bold text-[#526656]">${tierA}</p>
+    </div>
+    <div class="bg-white border border-[#ebe8e0] p-5 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+      <p class="text-xs font-semibold text-[#8c8981] mb-2 tracking-wide flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-[#91818c]"></span> 邮箱获取率
+      </p>
+      <div class="flex items-baseline gap-2">
+        <span class="text-3xl font-bold text-[#7d6978]">${withEmail}</span>
+        <span class="text-[11px] text-[#7d6978] font-medium bg-[#f2edf0] px-2 py-0.5 rounded-md">${emailRate}%</span>
+      </div>
+    </div>
+    <div class="bg-white border border-[#ebe8e0] p-5 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+      <p class="text-xs font-semibold text-[#8c8981] mb-2 tracking-wide flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-[#c99583]"></span> B/C 级潜力
+      </p>
+      <p class="text-3xl font-bold text-[#ac6c56]">${tierB + tierC}</p>
     </div>
   </div>
-  <div class="section">
-    <h2>📁 数据文件</h2>
-    <div class="path-box">${escHtml(csvPath)}</div>
-    <p style="color:#64748b;font-size:12px;margin-top:8px">同时生成 CSV 文件，可用 Excel / Numbers 打开编辑</p>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <section class="lg:col-span-4 bg-white border border-[#ebe8e0] rounded-xl p-6 shadow-[0_2px_8px_rgba(0,0,0,0.02)] h-fit">
+      <h2 class="text-[15px] font-semibold text-[#3f3e3a] mb-6 flex items-center gap-2">
+        🌿 关键词标签画像
+      </h2>
+      <div class="space-y-4">
+        ${kwBarsHtml}
+      </div>
+    </section>
+
+    <section class="lg:col-span-8 bg-white border border-[#ebe8e0] rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col">
+      <div class="p-4 border-b border-[#ebe8e0] flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#faf9f5]">
+        <div class="relative w-full sm:w-64">
+          <svg class="absolute left-3 top-2.5 w-4 h-4 text-[#aba79e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <input type="text" id="search" placeholder="搜索博主或邮箱..." oninput="filterRows()"
+                 class="w-full bg-white text-[13px] text-[#3f3e3a] border border-[#e3dfd5] rounded-lg pl-9 pr-3 py-2 focus:outline-none focus:border-[#c4b5a3] focus:ring-1 focus:ring-[#c4b5a3] placeholder-[#aba79e] transition-shadow">
+        </div>
+        <div class="flex items-center gap-1 bg-[#f2f0ea] p-1 border border-[#e3dfd5] rounded-lg text-[13px] font-medium text-[#7a7770]">
+          <button onclick="filterByTier('', this)" class="px-3 py-1.5 rounded-md transition-all toolbar-btn active-btn bg-white text-[#3f3e3a] shadow-[0_1px_2px_rgba(0,0,0,0.05)]">全部</button>
+          <button onclick="filterByTier('A', this)" class="px-3 py-1.5 rounded-md transition-all toolbar-btn hover:text-[#3f3e3a]">A 级</button>
+          <button onclick="filterByTier('B', this)" class="px-3 py-1.5 rounded-md transition-all toolbar-btn hover:text-[#3f3e3a]">B 级</button>
+          <button onclick="filterByTier('C', this)" class="px-3 py-1.5 rounded-md transition-all toolbar-btn hover:text-[#3f3e3a]">C 级</button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-[13px] whitespace-nowrap">
+          <thead>
+            <tr class="border-b border-[#ebe8e0] bg-white text-[#8c8981] font-medium">
+              <th onclick="sortTable(0)" class="px-4 py-3 hover:text-[#3f3e3a] cursor-pointer transition-colors w-12">#</th>
+              <th onclick="sortTable(1)" class="px-4 py-3 hover:text-[#3f3e3a] cursor-pointer transition-colors w-16">评级</th>
+              <th onclick="sortTable(2)" class="px-4 py-3 hover:text-[#3f3e3a] cursor-pointer transition-colors">博主</th>
+              <th onclick="sortTable(3)" class="px-4 py-3 hover:text-[#3f3e3a] cursor-pointer transition-colors">粉丝数</th>
+              <th onclick="sortTable(4)" class="px-4 py-3 hover:text-[#3f3e3a] cursor-pointer transition-colors">峰值播放</th>
+              <th class="px-4 py-3 text-[#8c8981] cursor-default">联系方式</th>
+              <th class="px-4 py-3 text-[#8c8981] cursor-default hidden sm:table-cell">标签来源</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="divide-y divide-[#f2f0ea] text-[#595751]">
+            ${rowsHtml}
+          </tbody>
+        </table>
+        <div id="emptyState" class="p-16 text-center text-[#aba79e] text-[13px] hidden bg-white">
+          📝 页面空空如也，试试更换关键词
+        </div>
+      </div>
+    </section>
   </div>
+
+  <footer class="text-center pb-8">
+    <p class="text-[12px] text-[#aba79e]">
+      数据已导出至 <span class="bg-[#f2f0ea] px-1.5 py-0.5 rounded border border-[#e3dfd5] text-[#8c8981] font-mono">${escHtml(csvPath)}</span>
+    </p>
+  </footer>
 </div>
-<script>
+${scr}
 let currentTier = '';
 function filterRows(){
   const q = document.getElementById('search').value.toLowerCase();
@@ -486,17 +510,24 @@ function filterRows(){
   let visible = 0;
   rows.forEach(row => {
     const tier = row.getAttribute('data-tier');
-    const search = row.getAttribute('data-search');
+    const search = row.getAttribute('data-search').toLowerCase();
     const match = (!currentTier || tier === currentTier) && (!q || search.includes(q));
     row.style.display = match ? '' : 'none';
     if (match) visible++;
   });
-  document.getElementById('emptyState').style.display = visible === 0 ? '' : 'none';
+  if (visible === 0) {
+    document.getElementById('emptyState').classList.remove('hidden');
+  } else {
+    document.getElementById('emptyState').classList.add('hidden');
+  }
 }
-function filterByTier(tier){
+function filterByTier(tier, btn){
   currentTier = tier;
-  document.querySelectorAll('.toolbar button').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  const parent = btn.parentElement;
+  parent.querySelectorAll('.toolbar-btn').forEach(b => {
+    b.classList.remove('active-btn', 'bg-white', 'text-[#3f3e3a]', 'shadow-[0_1px_2px_rgba(0,0,0,0.05)]');
+  });
+  btn.classList.add('active-btn', 'bg-white', 'text-[#3f3e3a]', 'shadow-[0_1px_2px_rgba(0,0,0,0.05)]');
   filterRows();
 }
 let sortDir = 1;
@@ -506,7 +537,8 @@ function sortTable(col){
   rows.sort((a,b) => {
     let av = a.cells[col].textContent.trim();
     let bv = b.cells[col].textContent.trim();
-    const an = parseFloat(av.replace(/[^0-9.]/g,'')); const bn = parseFloat(bv.replace(/[^0-9.]/g,''));
+    const an = parseFloat(av.replace(/[^0-9.]/g,''));
+    const bn = parseFloat(bv.replace(/[^0-9.]/g,''));
     if (!isNaN(an) && !isNaN(bn)) return sortDir * (an - bn);
     return sortDir * av.localeCompare(bv);
   });
@@ -514,7 +546,6 @@ function sortTable(col){
   sortDir *= -1;
 }
 </script>
-${scr}
 </body>
 </html>`;
 }
