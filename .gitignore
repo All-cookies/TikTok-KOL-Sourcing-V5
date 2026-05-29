@@ -19,3 +19,6 @@ dist/
 # Logs
 *.log
 npm-debug.log*
+
+# Output files
+output/
