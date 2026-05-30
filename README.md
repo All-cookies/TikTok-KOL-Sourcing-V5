@@ -10,7 +10,7 @@
 
 用关键词搜 TikTok 账号，常常遇见搜索内容重复、找不到合适的达人的情况，真正做内容的博主被淹没了。
 
-这个工具换了思路——**先生成差异化的关键词，再搜视频，然后从视频里提取创作者**。只要丢一个亚马逊链接，AI 自动分析产品，生成四组关键词：
+这个工具换了思路——**先生成差异化的关键词，再搜视频，然后从视频里提取创作者**。只要丢一个亚马逊链接或者说明你的产品是什么，AI 自动分析，生成四组关键词：
 
 | 类型 | 作用 | 示例 |
 |------|------|------|
@@ -20,6 +20,11 @@
 | 人群词 | 扩大范围，覆盖更多潜在人选 | "pet mom essentials" |
 
 采集完自动去重，按播放量排序，只保留最活跃的创作者。
+
+宠物智能用品关键词示例：
+<img width="2360" height="462" alt="image" src="https://github.com/user-attachments/assets/577849cb-ee7f-469f-874b-eb33f037fcdb" />
+
+
 
 ---
 
@@ -46,23 +51,8 @@
 
 ---
 
-### 生成个性化开发信
-
-邮件不是替换个名字就完事，而是**引用博主的具体视频内容**，让对方觉得"这封邮件是专门写给我的"：
-
-> "I saw your review video of the Litter Robot 4, which had xxx views, and the comments section was full of people asking if it was any good—your fans have a real need for this product category."
-
-还会根据博主规模自动调整语气，也可以自定义选择：
-
-| 博主类型 | 语气风格 | 开头示例 |
-|----------|----------|----------|
-| 小博主（<10K粉） | 轻松随性 | "hey！看到你的视频太棒了..." |
-| 中型博主（10K-100K） | 友好专业 | "Hi，你的内容很有影响力..." |
-| 大博主（100K+） | 专业简洁 | "Your content on X caught my attention..." |
-
----
-
-### 可视化报告，方便运营快速判断
+### 可视化报告，方便营销人快速判断
+<img width="1259" height="813" alt="截屏2026-05-30 13 28 41" src="https://github.com/user-attachments/assets/05dec44c-7e89-4b3e-bb0e-8725b52919ac" />
 
 打开 HTML 报告，无需打开 Excel，所有信息一目了然。
 
@@ -70,9 +60,12 @@
 
 - **基本信息** — 账号、粉丝数、评级
 - **联系方式** — 邮箱、主页链接
-- **Bio** — 运营人员直接判断内容风格、是否匹配品牌
+- **Bio** — 运营人员直接判断内容风格、是否匹配品牌🌟
 - **匹配视频** — 点开直接看，点击可跳转到 TikTok 查看完整内容
 - **关键词来源** — 知道是通过哪个词找到的
+
+<img width="1259" height="813" alt="截屏2026-05-30 13 28 44" src="https://github.com/user-attachments/assets/e78f5e06-fb58-4ec7-8e54-c824aea08e8e" />
+
 
 支持多种排序方式，点击表头即可切换：
 - 按评级排序（A级优先）
@@ -90,16 +83,22 @@
 | HTML 报告 | 浏览器打开，运营人员快速筛选判断 |
 | 开发信文本 | 批量生成的个性化邮件，直接复制使用 |
 
-**报告预览：**
 
-![达人卡片 - 基本信息](./screenshots/report-1.png)
+### 生成个性化开发信
 
-报告中直接展示达人的 **Bio 内容**和**匹配视频**，帮助运营快速判断达人是否适合合作，无需打开其他工具。
+邮件不是替换个名字就完事，而是**引用博主的具体视频内容**，让对方觉得"这封邮件是专门写给我的"：
 
-![达人卡片 - 视频详情](./screenshots/report-2.png)
+> "I saw your review video of the Litter Robot 4, which had xxx views, and the comments section was full of people asking if it was any good—your fans have a real need for this product category."
+
+还会根据博主规模自动调整语气，也可以自定义选择：
+
+| 博主类型 | 语气风格 | 开头示例 |
+|----------|----------|----------|
+| 小博主（<10K粉） | 轻松随性 | "hey！看到你的视频太棒了..." |
+| 中型博主（10K-100K） | 友好专业 | "Hi，你的内容很有影响力..." |
+| 大博主（100K+） | 专业简洁 | "Your content on X caught my attention..." |
 
 ---
-
 ## 谁适合用
 
 | 人群 | 用它做什么 |
