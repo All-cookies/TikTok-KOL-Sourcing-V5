@@ -3,24 +3,39 @@ import { writeFileSync, mkdirSync, existsSync } from "fs";
 import { join } from "path";
 
 // ============================================================
-// CUSTOMIZE: PETKIT 智能猫砂盆采集任务
+// CUSTOMIZE: AI+塔罗/心理陪伴 采集任务
 // ============================================================
 
 const SEARCH_TASKS = [
-  { keyword: "cat litter box review", dimension: "category" as const },
-  { keyword: "self cleaning cat litter", dimension: "category" as const },
-  { keyword: "cat mom routine", dimension: "scene" as const },
-  { keyword: "pet tech gadgets", dimension: "scene" as const },
-  { keyword: "Litter Robot review", dimension: "competitor" as const },
+  // 品类词 - 已经在做这类内容的博主
+  { keyword: "tarot reading", dimension: "category" as const },
+  { keyword: "astrology tiktok", dimension: "category" as const },
+  { keyword: "psychic reading", dimension: "category" as const },
+  { keyword: "spiritual guidance", dimension: "category" as const },
+  { keyword: "meditationasmr", dimension: "category" as const },
+  // 场景词 - 目标用户常看的视频类型
+  { keyword: "anxiety relief routine", dimension: "scene" as const },
+  { keyword: "manifestation techniques", dimension: "scene" as const },
+  { keyword: "witchy routine", dimension: "scene" as const },
+  { keyword: "morning spiritual routine", dimension: "scene" as const },
+  { keyword: "night meditation routine", dimension: "scene" as const },
+  // 竞品词 - 推过相关内容的博主
+  { keyword: "AI tarot reading", dimension: "competitor" as const },
+  { keyword: "ai oracle app", dimension: "competitor" as const },
+  { keyword: "spiritual app review", dimension: "competitor" as const },
+  // 人群词 - 覆盖更多潜在人选
+  { keyword: "spiritual self care", dimension: "audience" as const },
+  { keyword: "gen z wellness", dimension: "audience" as const },
+  { keyword: "witchtok", dimension: "audience" as const },
 ];
 
 const MAX_PAGES = 5;
 const TARGET_TOTAL = 50;
-const CATEGORY_KEYWORDS = ["cat litter", "litter box", "cat care", "pet tech", "smart pet", "automatic litter"];
-const COMPETITOR_KEYWORDS = ["litter robot", "whisker", "petmate"];
+const CATEGORY_KEYWORDS = ["tarot", "astrology", "psychic", "spiritual", "meditation", "mindfulness", "manifestation", "witch", "oracle", "zen"];
+const COMPETITOR_KEYWORDS = ["ai tarot", "ai oracle", "spiritual app", "fortune telling", "mystical"];
 const FOLLOWER_MIN = 5_000;
 const FOLLOWER_MAX = 5_000_000;
-const OUTPUT_LABEL = "petkit-cat-litter";
+const OUTPUT_LABEL = "ai-tarot-psychology";
 
 // ============================================================
 // Types
@@ -345,22 +360,43 @@ function toHTMLReport(
           : String(c.best_video_plays);
       const tierBg = c.tier === "A" ? "bg-[#e8ece9] border-[#d2d9d4] text-[#526656]" : c.tier === "B" ? "bg-[#fef3c7] border-[#fde68a] text-[#92400e]" : "bg-[#fee2e2] border-[#fecaca] text-[#991b1b]";
       const tierText = c.tier === "A" ? "#526656" : c.tier === "B" ? "#92400e" : "#991b1b";
+      const videoUrl = c.best_video_desc.includes("http")
+        ? c.best_video_desc.match(/https?:\/\/[^\s]+/)?.[0] || ""
+        : "";
+      const videoDescClean = c.best_video_desc.replace(/https?:\/\/[^\s]+/g, "").trim();
       return `
-      <tr data-keyword="${escHtml(c.search_keyword)}" data-tier="${c.tier}" data-search="${escHtml((c.nickname + " " + c.unique_id + " " + c.bio).toLowerCase())}" class="hover:bg-[#faf9f5] transition-colors">
-        <td class="px-4 py-3.5 text-[#aba79e]">${i + 1}</td>
-        <td class="px-4 py-3.5"><span class="font-semibold border px-2 py-0.5 rounded text-[11px] ${tierBg}">${c.tier}</span></td>
-        <td class="px-4 py-3.5">
+      <tr data-keyword="${escHtml(c.search_keyword)}" data-tier="${c.tier}" data-search="${escHtml((c.nickname + " " + c.unique_id + " " + c.bio).toLowerCase())}" class="hover:bg-[#faf9f5] transition-colors border-b-2 border-[#c7c4ba]">
+        <td class="px-4 py-4 text-[#aba79e]">${i + 1}</td>
+        <td class="px-4 py-4"><span class="font-semibold border px-2 py-0.5 rounded text-[11px] ${tierBg}">${c.tier}</span></td>
+        <td class="px-4 py-4">
           <a href="${escHtml(c.profile_url)}" target="_blank" class="text-[#3f3e3a] font-semibold hover:text-[#ac6c56] transition-colors block">@${escHtml(c.unique_id)}</a>
           <div class="text-[#8c8981] text-[11px] mt-0.5">${escHtml(c.nickname)}</div>
         </td>
-        <td class="px-4 py-3.5 font-medium">${(c.follower_count / 1000).toFixed(1)}K</td>
-        <td class="px-4 py-3.5 font-medium text-[#7a7770]">${plays}</td>
-        <td class="px-4 py-3.5">
+        <td class="px-4 py-4 font-medium">${(c.follower_count / 1000).toFixed(1)}K</td>
+        <td class="px-4 py-4 font-medium text-[#7a7770]">${plays}</td>
+        <td class="px-4 py-4">
           ${c.email ? `<a href="mailto:${escHtml(c.email)}" class="text-[#6b8299] hover:text-[#4a5c6d] underline decoration-[#c5ced6] underline-offset-2">Email</a>` : '<span class="text-[#dedbd3]">—</span>'}
           ${c.bio_link ? `<span class="text-[#dedbd3] mx-1">|</span><a href="${escHtml(c.bio_link)}" target="_blank" class="text-[#6b8299] hover:text-[#4a5c6d] underline decoration-[#c5ced6] underline-offset-2">Bio Link</a>` : ''}
         </td>
-        <td class="px-4 py-3.5 hidden sm:table-cell">
+        <td class="px-4 py-4 hidden sm:table-cell">
           <span class="text-[#7d6978] bg-[#f2edf0] px-2 py-1 rounded-md text-[11px]">${escHtml(c.search_keyword)}</span>
+        </td>
+      </tr>
+      <tr class="bg-[#fdfbf7] border-b-2 border-[#c7c4ba]">
+        <td colspan="7" class="px-4 py-3 text-[12px]">
+          <div class="text-[#8c8981]">
+            <span class="font-medium">Bio：</span>
+            <span class="text-[#595751]">${escHtml(c.bio || "-")}</span>
+          </div>
+        </td>
+      </tr>
+      <tr class="bg-[#faf9f5] mb-3">
+        <td colspan="7" class="px-4 py-3 text-[12px]">
+          <div class="text-[#8c8981]">
+            <span class="font-medium">matched video：</span>
+            <span class="text-[#7a7770] italic">${escHtml(videoDescClean || "-")}</span>
+            ${videoUrl ? `<a href="${escHtml(videoUrl)}" target="_blank" class="ml-2 text-[#6b8299] hover:text-[#4a5c6d] underline decoration-[#c5ced6] underline-offset-2">▶ 观看</a>` : ''}
+          </div>
         </td>
       </tr>`;
     })
@@ -403,8 +439,9 @@ function toHTMLReport(
 <div class="max-w-[1200px] mx-auto px-6 py-12 md:py-16 space-y-10">
 
   <header class="space-y-3 pb-4">
+    <div class="text-4xl mb-2">🔮</div>
     <h1 class="text-3xl font-bold tracking-tight text-[#2c2b28]">
-      📊 ${OUTPUT_LABEL} 红人库
+      KOL 搜集报告
     </h1>
     <p class="text-[13px] text-[#8c8981] font-medium flex items-center gap-3">
       <span class="flex items-center gap-1.5">
@@ -414,7 +451,7 @@ function toHTMLReport(
       <span>•</span>
       <span class="flex items-center gap-1.5">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
-        TikHub API 数据源
+        ${OUTPUT_LABEL}
       </span>
     </p>
   </header>
@@ -447,17 +484,16 @@ function toHTMLReport(
     </div>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-    <section class="lg:col-span-4 bg-white border border-[#ebe8e0] rounded-xl p-6 shadow-[0_2px_8px_rgba(0,0,0,0.02)] h-fit">
-      <h2 class="text-[15px] font-semibold text-[#3f3e3a] mb-6 flex items-center gap-2">
-        🌿 关键词标签画像
-      </h2>
-      <div class="space-y-4">
-        ${kwBarsHtml}
-      </div>
-    </section>
+  <section class="bg-white border border-[#ebe8e0] rounded-xl p-6 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+    <h2 class="text-[15px] font-semibold text-[#3f3e3a] mb-6 flex items-center gap-2">
+      🌿 关键词标签画像
+    </h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      ${kwBarsHtml}
+    </div>
+  </section>
 
-    <section class="lg:col-span-8 bg-white border border-[#ebe8e0] rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col">
+  <section class="bg-white border border-[#ebe8e0] rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col">
       <div class="p-4 border-b border-[#ebe8e0] flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#faf9f5]">
         <div class="relative w-full sm:w-64">
           <svg class="absolute left-3 top-2.5 w-4 h-4 text-[#aba79e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -473,6 +509,9 @@ function toHTMLReport(
       </div>
 
       <div class="overflow-x-auto">
+        <div class="px-4 py-2 text-[11px] text-[#aba79e] bg-[#faf9f5] border-b border-[#ebe8e0]">
+          💡 点击列标题可排序
+        </div>
         <table class="w-full text-left border-collapse text-[13px] whitespace-nowrap">
           <thead>
             <tr class="border-b border-[#ebe8e0] bg-white text-[#8c8981] font-medium">
@@ -494,7 +533,6 @@ function toHTMLReport(
         </div>
       </div>
     </section>
-  </div>
 
   <footer class="text-center pb-8">
     <p class="text-[12px] text-[#aba79e]">
